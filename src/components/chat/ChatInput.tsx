@@ -3,6 +3,7 @@ import React, { useState, KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Terminal, Mic, UploadCloud } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -11,11 +12,17 @@ interface ChatInputProps {
 
 export function ChatInput({ onSendMessage, isProcessing = false }: ChatInputProps) {
   const [message, setMessage] = useState("");
+  const { toast } = useToast();
 
   const handleSendMessage = () => {
     if (message.trim() && !isProcessing) {
       onSendMessage(message);
       setMessage("");
+    } else if (!message.trim()) {
+      toast({
+        description: "Please enter a message",
+        variant: "default",
+      });
     }
   };
 
@@ -39,7 +46,7 @@ export function ChatInput({ onSendMessage, isProcessing = false }: ChatInputProp
         </Button>
         
         <Input
-          placeholder={isProcessing ? "Sentinel is processing..." : "Ask Sentinel about cybersecurity..."}
+          placeholder={isProcessing ? "Processing..." : "Ask Sentinel about cybersecurity..."}
           className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent py-6"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -53,6 +60,7 @@ export function ChatInput({ onSendMessage, isProcessing = false }: ChatInputProp
             size="icon"
             className="text-muted-foreground hover:text-primary hover:bg-transparent"
             aria-label="Upload file"
+            disabled={isProcessing}
           >
             <UploadCloud className="h-5 w-5" />
           </Button>
@@ -62,6 +70,7 @@ export function ChatInput({ onSendMessage, isProcessing = false }: ChatInputProp
             size="icon"
             className="text-muted-foreground hover:text-primary hover:bg-transparent"
             aria-label="Voice input"
+            disabled={isProcessing}
           >
             <Mic className="h-5 w-5" />
           </Button>
@@ -77,10 +86,6 @@ export function ChatInput({ onSendMessage, isProcessing = false }: ChatInputProp
             <Send className="h-4 w-4" />
           </Button>
         </div>
-      </div>
-      
-      <div className="text-xs text-muted-foreground/70 text-center">
-        Sentinel's responses are simulated. In a real implementation, it would connect to security APIs and services.
       </div>
     </div>
   );
